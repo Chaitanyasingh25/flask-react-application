@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import "../App.css"; // Add this if you're keeping CSS separate
+import "../App.css";
 
 const Login = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -11,7 +11,10 @@ const Login = () => {
     const checkLoginStatus = async () => {
       try {
         const res = await axios.get(`${apiUrl}/login/status`);
-        setIsLoggedIn(res.data.status === "logged_in");
+        if (res.data.status === "logged_in") {
+          setIsLoggedIn(true);
+          window.location.href = "/dashboard"; // ✅ auto-redirect
+        }
       } catch (err) {
         console.error("❌ Error checking login status:", err);
       }
@@ -31,17 +34,20 @@ const Login = () => {
   }, [apiUrl]);
 
   return (
-    <div className="login-container">
-      {isLoggedIn ? (
-        <p className="login-success">✅ You are logged in.</p>
-      ) : (
-        <>
-          <h2 className="login-heading">🔐 Kite Login</h2>
-          <p className="login-message">Please login via Zerodha to continue:</p>
-          <a href={loginUrl}>
-            <button className="login-button">Login via Zerodha</button>
-          </a>
-        </>
+    <div className="login-box animate-fadeIn">
+      {!isLoggedIn && (
+        <div className="login-inner animate-slideIn">
+          <h2 className="login-heading">🔐 Zerodha Kite Login</h2>
+          <p className="login-message">
+            Please log in to access trading symbol tools and margin data.
+          </p>
+          <button
+            className="login-button"
+            onClick={() => window.location.href = loginUrl}
+          >
+            Login via Zerodha
+          </button>
+        </div>
       )}
     </div>
   );

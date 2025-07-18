@@ -3,10 +3,11 @@ import Login from './components/Login';
 import UpdateForm from './components/UpdateForm';
 import HistoricalChart from './components/historicalchart';
 import axios from 'axios';
-import './App.css';  // <-- include the updated CSS
+import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [checkedLogin, setCheckedLogin] = useState(false);  // new: show content only after checking login
   const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:5000";
 
   useEffect(() => {
@@ -16,6 +17,8 @@ function App() {
         setIsLoggedIn(res.data.status === "logged_in");
       } catch (e) {
         console.error("Login status check failed:", e);
+      } finally {
+        setCheckedLogin(true);
       }
     };
     checkLogin();
@@ -30,25 +33,28 @@ function App() {
         </p>
       </header>
 
-      <section className="section card animate-fadeIn">
-        <h2 className="section-title">🔐</h2>
-        <Login />
-      </section>
+      {checkedLogin ? (
+        isLoggedIn ? (
+          <>
+            <section className="section card animate-slideIn">
+              <h2 className="section-title">📥 Symbol Price & Margin</h2>
+              <UpdateForm />
+            </section>
 
-      {isLoggedIn ? (
-        <>
-          <section className="section card animate-slideIn">
-            <h2 className="section-title">📥 Symbol Price & Margin</h2>
-            <UpdateForm />
+            <section className="section card animate-fadeIn" style={{ animationDelay: "0.2s" }}>
+              <h2 className="section-title">📈 Historical OHLC Chart</h2>
+              <HistoricalChart />
+            </section>
+          </>
+        ) : (
+          <section className="section card animate-fadeIn">
+            <h2 className="section-title">🔐 Login Required</h2>
+            <Login />
+            <p className="login-reminder">🔒 Please login first to access the data.</p>
           </section>
-
-          <section className="section card animate-fadeIn" style={{ animationDelay: "0.2s" }}>
-            <h2 className="section-title">📈 Historical OHLC Chart</h2>
-            <HistoricalChart />
-          </section>
-        </>
+        )
       ) : (
-        <p className="login-reminder">🔒 Please login first to access the data.</p>
+        <p>Loading...</p>
       )}
     </div>
   );
