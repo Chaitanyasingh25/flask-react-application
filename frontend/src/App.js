@@ -60,4 +60,9 @@ function App() {
   );
 }
 
+<div className="bg-green-500 text-white p-4 rounded-lg">
+  ✅ Tailwind is fully working!
+</div>
+
+
 export default App;
